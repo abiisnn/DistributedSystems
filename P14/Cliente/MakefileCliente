@@ -1,0 +1,2 @@
+cliente: cliente.cpp 
+	g++ cliente.cpp  Solicitud.cpp SocketDatagrama.cpp PaqueteDatagrama.cpp -o cliente
