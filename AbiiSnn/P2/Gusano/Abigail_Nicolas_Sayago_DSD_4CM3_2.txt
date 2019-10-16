@@ -1,0 +1,461 @@
+#include "Gusano.h"
+#include "gfx.h"
+#include<bits/stdc++.h>
+#define lon 30
+#define r 800
+using namespace std;
+
+int main() {
+	int n; cin >> n;
+	int x, y, t;
+	double X, Y;
+	vector<Gusano> g;
+	gfx_open(800, 800, "Gusanos");
+ 	gfx_color(0, 200, 100);
+ 	
+ 	// Crear gusanos
+ 	srand(time(NULL));
+ 	for(int i = 0; i < n; i++) {
+		t = rand() % 5;
+ 		if(t == 3) { // Circulo 
+ 			X = rand() % r;
+ 			Y = rand() % r;
+ 			g.push_back(Gusano(lon, X, Y)); 
+ 		} else {
+ 			x = rand() % r;
+ 	 		y = rand() % r;
+ 		 	g.push_back(Gusano(lon, x, y));
+ 		}
+ 		g[i].setTipo(t);
+ 	}
+	int tc = 500;
+	while(true) {
+		gfx_clear();
+		// Para cada gusano
+		for(int i = 0; i < g.size(); i++) {
+			gfx_color(255, 255, 255);
+			g[i].dibujarGusano();
+			gfx_flush();
+			g[i].moverGusano();
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+	return 0;
+}
+--------------------------------------------------------------------------------
+#if defined(__cplusplus)
+extern "C" {
+#endif
+/*
+A simple graphics library for CSE 20211 by Douglas Thain
+For course assignments, you should not change this file.
+For complete documentation, see:
+http://www.nd.edu/~dthain/courses/cse20211/fall2011/gfx
+Version 3, 11/07/2012 - Now much faster at changing colors rapidly.
+Version 2, 9/23/2011 - Fixes a bug that could result in jerky animation.
+*/
+
+#ifndef GFX_H
+#define GFX_H
+
+/* Open a new graphics window. */
+void gfx_open( int width, int height, const char *title );
+
+/* Draw a point at (x,y) */
+void gfx_point( int x, int y );
+
+/* Draw a line from (x1,y1) to (x2,y2) */
+void gfx_line( int x1, int y1, int x2, int y2 );
+
+/* Change the current drawing color. */
+void gfx_color( int red, int green, int blue );
+
+/* Clear the graphics window to the background color. */
+void gfx_clear();
+
+/* Change the current background color. */
+void gfx_clear_color( int red, int green, int blue );
+
+/* Wait for the user to press a key or mouse button. */
+char gfx_wait();
+
+/* Return the X and Y coordinates of the last event. */
+int gfx_xpos();
+int gfx_ypos();
+
+/* Return the X and Y dimensions of the window. */
+int gfx_xsize();
+int gfx_ysize();
+
+/* Check to see if an event is waiting. */
+int gfx_event_waiting();
+
+/* Flush all previous output to the window. */
+void gfx_flush();
+
+#endif
+
+#if defined(__cplusplus)
+}
+#endif
+---------------------------------------------------------------------------------
+/*
+A simple graphics library for CSE 20211 by Douglas Thain
+For complete documentation, see:
+http://www.nd.edu/~dthain/courses/cse20211/fall2011/gfx
+Version 3, 11/07/2012 - Now much faster at changing colors rapidly.
+Version 2, 9/23/2011 - Fixes a bug that could result in jerky animation.
+*/
+
+#include <X11/Xlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "gfx.h"
+
+/*
+gfx_open creates several X11 objects, and stores them in globals
+for use by the other functions in the library.
+*/
+
+static Display *gfx_display=0;
+static Window  gfx_window;
+static GC      gfx_gc;
+static Colormap gfx_colormap;
+static int      gfx_fast_color_mode = 0;
+
+/* These values are saved by gfx_wait then retrieved later by gfx_xpos and gfx_ypos. */
+
+static int saved_xpos = 0;
+static int saved_ypos = 0;
+
+/* Open a new graphics window. */
+
+void gfx_open( int width, int height, const char *title )
+{
+	gfx_display = XOpenDisplay(0);
+	if(!gfx_display) {
+		fprintf(stderr,"gfx_open: unable to open the graphics window.\n");
+		exit(1);
+	}
+
+	Visual *visual = DefaultVisual(gfx_display,0);
+	if(visual && visual->class==TrueColor) {
+		gfx_fast_color_mode = 1;
+	} else {
+		gfx_fast_color_mode = 0;
+	}
+
+	int blackColor = BlackPixel(gfx_display, DefaultScreen(gfx_display));
+	int whiteColor = WhitePixel(gfx_display, DefaultScreen(gfx_display));
+
+	gfx_window = XCreateSimpleWindow(gfx_display, DefaultRootWindow(gfx_display), 0, 0, width, height, 0, blackColor, blackColor);
+
+	XSetWindowAttributes attr;
+	attr.backing_store = Always;
+
+	XChangeWindowAttributes(gfx_display,gfx_window,CWBackingStore,&attr);
+
+	XStoreName(gfx_display,gfx_window,title);
+
+	XSelectInput(gfx_display, gfx_window, StructureNotifyMask|KeyPressMask|ButtonPressMask);
+
+	XMapWindow(gfx_display,gfx_window);
+
+	gfx_gc = XCreateGC(gfx_display, gfx_window, 0, 0);
+
+	gfx_colormap = DefaultColormap(gfx_display,0);
+
+	XSetForeground(gfx_display, gfx_gc, whiteColor);
+
+	// Wait for the MapNotify event
+
+	for(;;) {
+		XEvent e;
+		XNextEvent(gfx_display, &e);
+		if (e.type == MapNotify)
+			break;
+	}
+}
+
+/* Draw a single point at (x,y) */
+
+void gfx_point( int x, int y )
+{
+	XDrawPoint(gfx_display,gfx_window,gfx_gc,x,y);
+}
+
+/* Draw a line from (x1,y1) to (x2,y2) */
+
+void gfx_line( int x1, int y1, int x2, int y2 )
+{
+	XDrawLine(gfx_display,gfx_window,gfx_gc,x1,y1,x2,y2);
+}
+
+/* Change the current drawing color. */
+
+void gfx_color( int r, int g, int b )
+{
+	XColor color;
+
+	if(gfx_fast_color_mode) {
+		/* If this is a truecolor display, we can just pick the color directly. */
+		color.pixel = ((b&0xff) | ((g&0xff)<<8) | ((r&0xff)<<16) );
+	} else {
+		/* Otherwise, we have to allocate it from the colormap of the display. */
+		color.pixel = 0;
+		color.red = r<<8;
+		color.green = g<<8;
+		color.blue = b<<8;
+		XAllocColor(gfx_display,gfx_colormap,&color);
+	}
+
+	XSetForeground(gfx_display, gfx_gc, color.pixel);
+}
+
+/* Clear the graphics window to the background color. */
+
+void gfx_clear()
+{
+	XClearWindow(gfx_display,gfx_window);
+}
+
+/* Change the current background color. */
+
+void gfx_clear_color( int r, int g, int b )
+{
+	XColor color;
+	color.pixel = 0;
+	color.red = r<<8;
+	color.green = g<<8;
+	color.blue = b<<8;
+	XAllocColor(gfx_display,gfx_colormap,&color);
+
+	XSetWindowAttributes attr;
+	attr.background_pixel = color.pixel;
+	XChangeWindowAttributes(gfx_display,gfx_window,CWBackPixel,&attr);
+}
+
+int gfx_event_waiting()
+{
+       XEvent event;
+
+       gfx_flush();
+
+       while (1) {
+               if(XCheckMaskEvent(gfx_display,-1,&event)) {
+                       if(event.type==KeyPress) {
+                               XPutBackEvent(gfx_display,&event);
+                               return 1;
+                       } else if (event.type==ButtonPress) {
+                               XPutBackEvent(gfx_display,&event);
+                               return 1;
+                       } else {
+                               return 0;
+                       }
+               } else {
+                       return 0;
+               }
+       }
+}
+
+/* Wait for the user to press a key or mouse button. */
+
+char gfx_wait()
+{
+	XEvent event;
+
+	gfx_flush();
+
+	while(1) {
+		XNextEvent(gfx_display,&event);
+
+		if(event.type==KeyPress) {
+			saved_xpos = event.xkey.x;
+			saved_ypos = event.xkey.y;
+			return XLookupKeysym(&event.xkey,0);
+		} else if(event.type==ButtonPress) {
+			saved_xpos = event.xkey.x;
+			saved_ypos = event.xkey.y;
+			return event.xbutton.button;
+		}
+	}
+}
+
+/* Return the X and Y coordinates of the last event. */
+
+int gfx_xpos()
+{
+	return saved_xpos;
+}
+
+int gfx_ypos()
+{
+	return saved_ypos;
+}
+
+/* Flush all previous output to the window. */
+
+void gfx_flush()
+{
+	XFlush(gfx_display);
+}
+---------------------------------------------------------------------------------------
+#ifndef GUSANO_H_
+#define GUSANO_H_
+#include<bits/stdc++.h>
+using namespace std;
+
+class Gusano {
+private:
+	int longitud;
+	int x; 
+	int y;	
+	int tipo;
+	int grados;
+	double X;
+	double Y;
+	vector<double> xCirculo;
+	vector<double> yCirculo;
+public:
+	Gusano(int l, int xx, int yy);
+	Gusano(int l, double xx, double yy);
+	void dibujarGusano();
+	void moverGusano();
+	void setTipo(int a);
+	void lineaVertical();
+	void lineaHorizontal();
+	void lineaDiagonalAbajo();
+	void circulo();
+	void zigzag();
+	void moverLineaVertical();
+	void moverLineaHorizontal();
+	void moverLineaDiagonalAbajo();
+	void moverCirculo();
+	void moverZigzag();
+	void crearGrados();
+};
+#endif
+
+--------------------------------------------------------------------------------
+#include "Gusano.h"
+#include "gfx.h"
+#include<bits/stdc++.h>
+using namespace std;
+
+Gusano::Gusano(int l, int xx, int yy) {
+	longitud = l;
+	x = xx;
+	y = yy;
+}
+Gusano::Gusano(int l, double xx, double yy) {
+	longitud = l;
+	X = xx;
+	Y = yy;
+	grados = 0;
+}
+void Gusano::setTipo(int a) {
+	if(a == 0) tipo = 0;
+	if(a == 1) tipo = 1;
+	if(a == 2) tipo = 2;
+	if(a == 3) { tipo = 3; crearGrados(); }
+	if(a == 4) tipo = 4;
+}
+void Gusano::dibujarGusano() {
+	if(tipo == 0) lineaVertical();
+	if(tipo == 1) lineaHorizontal();
+	if(tipo == 2) lineaDiagonalAbajo();
+	if(tipo == 3) circulo();
+	if(tipo == 4) zigzag();
+}
+void Gusano::moverGusano() {
+	if(tipo == 0) moverLineaVertical();
+	if(tipo == 1) moverLineaHorizontal();
+	if(tipo == 2) moverLineaDiagonalAbajo();
+	if(tipo == 3) moverCirculo();
+	if(tipo == 4) moverZigzag();	
+}
+/******************************************
+		LINEA DIAGONAL HACIA ABAJO
+*******************************************/
+void Gusano::lineaDiagonalAbajo() {
+	for(int i = 0; i < longitud; i++) 
+		gfx_point(1+x+i, 1+y+i);
+}
+void Gusano::moverLineaDiagonalAbajo() {
+	x++; y++;
+	x %= 800; y %= 800;
+}
+
+/******************************************
+			   LINEA VERTICAL
+*******************************************/
+void Gusano::lineaVertical() {
+	for(int i = 0; i < longitud; i++)
+		gfx_point(x+1, y+1+i);
+}
+void Gusano::moverLineaVertical() {
+	y++; y %= 800;
+}
+
+/******************************************
+			   LINEA HORIZONTAL
+*******************************************/
+void Gusano::lineaHorizontal() {
+	for(int i = 0; i < longitud; i++) {
+		gfx_point(x+1+i, y+1);
+	}
+}
+void Gusano::moverLineaHorizontal() {
+	x++; x %= 800;
+}
+
+/******************************************
+			   	 CIRCULO
+*******************************************/
+void Gusano::crearGrados() {
+	double auxX, auxY;
+	srand(time(NULL));
+	int radio = rand() % 100;
+	for(int i = 0; i < 362; i++) {
+		double rad = (i * 3.16) / 180.0;
+		auxX = radio * cos(rad) - radio * sin(rad);
+		auxY = radio * sin(rad) + radio * cos(rad);
+		xCirculo.push_back(auxX);
+		yCirculo.push_back(auxY);	
+	}
+
+}
+void Gusano::circulo() {
+	double auxX, auxY;
+	for(double i = grados; i < grados + longitud; i++) {
+		gfx_point(X+xCirculo[i], Y+yCirculo[i]);
+	}
+}
+void Gusano::moverCirculo() {
+	grados++; grados %= 361;
+}
+
+/******************************************
+			   	 ZIGZAG
+*******************************************/
+void Gusano::zigzag() {
+	double auxX, auxY;
+	for(int i = 0; i < longitud; i++) {
+		auxY = sin(x+1+i);
+		gfx_point(x+1+i, y + auxY+1);
+	}
+}
+void Gusano::moverZigzag() {
+	x++; x %= 800;
+}
+--------------------------------------------------------------------------------------------
+run: main.cpp Gusano.o gfx.o
+	g++ gfx.o main.cpp Gusano.o gfx.o -o main -lX11
+
+gfx.o: gfx.c gfx.h
+	gcc gfx.c -c
+
+Gusano.o: Gusano.cpp Gusano.h
+	g++ Gusano.cpp -c

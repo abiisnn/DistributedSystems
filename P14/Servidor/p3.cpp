@@ -21,7 +21,8 @@ int main(void)
 	int res = num[0]+num[1];
 	memcpy(result,&res,sizeof(int));
 	
-	PaqueteDatagrama b((char*)result,sizeof(int),"10.100.79.131", a.obtienePuerto());
+	//PaqueteDatagrama b((char*)result,sizeof(int),"10.100.79.131", a.obtienePuerto());
+	PaqueteDatagrama b((char*)result,sizeof(int),"127.0.0.1", a.obtienePuerto());
 	int p=c.envia(b);
 	cout<<"Tamaño de envio: "<<p << endl;
 	return 0;

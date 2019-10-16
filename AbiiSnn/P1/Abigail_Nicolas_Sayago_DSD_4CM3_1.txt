@@ -1,0 +1,174 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+int main() {
+	double x, r, t;
+	cin >> x;
+	r = x;
+	t = 0; 
+	while(abs(x - (r * r)) > 1e-4) {
+		t = r;
+		r = (0.5) * ((x / r) + r);
+	}
+	cout << fixed << setprecision(4) << r << endl;
+}
+***************************************************
+#include<iostream>
+using namespace std;
+const double g = 9.8;
+int main() {
+    double t, result;
+    cin >> t;
+    result = 0.5 * g * t * t; 
+    cout << result << endl; 
+}
+***************************************************
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+	double segundos, horas, minutos, aux;
+	cin >> segundos;
+	horas = floor(segundos / 3600);
+	aux = horas * 60;
+	minutos = floor(segundos / 60) - aux;
+	aux = (horas * 60 * 60) + (minutos * 60);
+	segundos -= aux; 
+	cout << horas << " horas, ";
+	cout << minutos << " minutos, ";
+	cout << segundos << " segundos" << endl;
+}
+***************************************************
+#include <iostream>
+using namespace std;
+
+class Temperatura {
+private:
+  double gradosKelvin;
+public:
+  void setTemperaturaEnKelvin(double tem);
+  void settemperaturaEnFahrenheit(double tem);
+  void setTemperaturaEnCelsius(double tem);
+  double getTemperaturaEnKelvin();
+  double getTemperaturaEnFahrenheit();
+  double getTemperaturaEnCelsius();
+};
+----------------------------------------------------
+#include<iostream>
+#include<Temperatura>
+using namespace std;
+void Temperatura::setTemperaturaEnKelvin(double tem) {
+  gradosKelvin = tem;
+}
+
+void Temperatura::setTemperaturaEnCelsius(double tem) {
+  gradosKelvin = tem + 273.15;
+}
+void Temperatura::settemperaturaEnFahrenheit(double tem) {
+  gradosKelvin = (tem - 32.0) * (5 / 9.0) + 273.15;
+}
+double Temperatura::getTemperaturaEnCelsius() {
+  return gradosKelvin - 273.15;
+}
+double Temperatura::getTemperaturaEnFahrenheit() {
+  return (gradosKelvin - 273.15) * (9.0 / 5) + 32;
+}
+double Temperatura::getTemperaturaEnKelvin() {
+  return gradosKelvin;
+}
+----------------------------------------------------
+#include <iostream>
+using namespace std;
+int main() {
+  Temperatura t;
+  double kelvin;
+  cin >> kelvin;
+  t.setTemperaturaEnKelvin(kelvin);
+  cout << "Grados Kelvin: " << kelvin << endl;
+  
+  t.settemperaturaEnFahrenheit(t.getTemperaturaEnFahrenheit());
+  cout << "Grados Fahrenheit: " << t.getTemperaturaEnFahrenheit() << endl;
+
+  t.setTemperaturaEnCelsius(t.getTemperaturaEnCelsius());
+  cout << "Grados Celsius: " << t.getTemperaturaEnCelsius() << endl;
+}
+***************************************************
+#include <bits/stdc++.h>
+using namespace std;
+
+class Fraccion {
+private:
+  int numerador;
+  int denominador;
+
+public:
+  Fraccion(int n, int d);
+  double division();
+  void minimaExpresion();
+  int getNumerador();
+  int getDenominador();
+};
+---------------------------------
+#include<bits/stdc++.h>
+#include<Fraccion>
+using namespace std;
+
+Fraccion::Fraccion(int n, int d) : numerador(n), denominador(d) {}
+double Fraccion::division() { return (double)numerador / denominador; }
+void Fraccion::minimaExpresion() {
+  int g = __gcd(numerador, denominador);
+  numerador /= g;
+  denominador /= g;
+}
+int Fraccion::getNumerador() {
+  return numerador;
+}
+int Fraccion::getDenominador() {
+  return denominador;
+}
+------------------------------------
+#include<bits/stdc++.h>
+#include<Fraccion>
+using namespace std;
+int main() {
+  Fraccion f1(18, 15);
+  Fraccion f2(1, 5);
+
+  cout << "Division: " << f1.division() << endl;
+
+  f1.minimaExpresion();
+  cout << "Minima expresion: " << f1.getNumerador() << "/" << f1.getDenominador() << endl; 
+}
+***************************************************
+
+#include<bits/stdc++.h>
+using namespace std;
+
+class Numero {
+public:
+	int numero;
+	bool flag;
+};
+int main() {
+	int n;
+	cin >> n;
+	vector<Numero> numbers(n+1);
+
+	for(int i = 2; i <= n; i++) {
+		numbers[i].numero = i;
+		numbers[i].flag = true; 
+	}
+	for(int i = 2; i * i <= n; i++) {
+		if(numbers[i].flag) {
+			for(int j = i; j < (n / i); j++) {
+				numbers[i * j].flag = false;
+			}
+		}
+	}
+	for(int i = 0; i < n; i++) {
+		if(numbers[i].flag) {
+			cout << numbers[i].numero << " ";
+		}
+	}
+	cout << endl;
+}
