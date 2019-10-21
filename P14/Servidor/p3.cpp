@@ -22,7 +22,7 @@ int main(void)
 	memcpy(result,&res,sizeof(int));
 	
 	//PaqueteDatagrama b((char*)result,sizeof(int),"10.100.79.131", a.obtienePuerto());
-	PaqueteDatagrama b((char*)result,sizeof(int),"127.0.0.1", a.obtienePuerto());
+	PaqueteDatagrama b((char*)result,sizeof(int),"192.168.56.1", a.obtienePuerto());
 	int p=c.envia(b);
 	cout<<"Tamaño de envio: "<<p << endl;
 	return 0;

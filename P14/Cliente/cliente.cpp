@@ -7,7 +7,8 @@ int main(int argc, char * argv[])
 {
     //printf("hola\n");
     int num[1];
-    int n = stoi(argv[1]);
+    //int n = stoi(argv[1]);
+    int n = 5;
     int i = 0;
     int monto = 0;
     srand (time(NULL));
@@ -19,7 +20,7 @@ int main(int argc, char * argv[])
         int r;
         num[0] = rand() % 9 + 1;
         //printf("Envio: %d\n", num[0]);
-        struct mensaje * m =(struct mensaje *)a.doOperation("10.100.79.131",7200,i, (char*)num);
+        struct mensaje * m =(struct mensaje *)a.doOperation("192.168.56.1",7200,i, (char*)num);
         // Recibir
         memcpy(&r,m->arguments,sizeof(int));
         //printf("%d\n",r);

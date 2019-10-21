@@ -7,10 +7,10 @@ int main ()
 {
     //printf("hola\n");
     int num[2];
-    //num[0]=150;
-    //num[1]=7;
-    scanf("%d", &num[0]);
-    scanf("%d",&num[1]);
+    num[0]=150;
+    num[1]=7;
+    //scanf("%d", &num[0]);
+    //scanf("%d",&num[1]);
     Solicitud a;
     char * res;
     int r;
