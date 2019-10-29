@@ -1,4 +1,0 @@
-// Servidor
-g++ servidor.cpp  respuesta.cpp SocketDatagrama.cpp PaqueteDatagrama.cpp -o servidor -std=c++14
-// Cliente
-g++ cliente.cpp  Solicitud.cpp SocketDatagrama.cpp PaqueteDatagrama.cpp -o cliente

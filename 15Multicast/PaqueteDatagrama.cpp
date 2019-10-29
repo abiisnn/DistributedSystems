@@ -4,18 +4,16 @@
 using namespace std;
 
 PaqueteDatagrama::PaqueteDatagrama(char* data, unsigned int longi,char* ip_envio, int puerto_envio){
-	datos= new char[longi];
+	datos = new char[longi];
 	strcpy(ip, ip_envio);
 	memcpy(datos, data,longi);
-	puerto= puerto_envio;
+	puerto = puerto_envio;
     longitud = longi;
 
 }
-
-
 PaqueteDatagrama::PaqueteDatagrama(unsigned int longi){
-	longitud= longi;
-	datos= new char[longitud];
+	longitud = longi;
+	datos = new char[longitud];
 }
 
 PaqueteDatagrama::~PaqueteDatagrama(){
@@ -39,7 +37,7 @@ char* PaqueteDatagrama::obtieneDatos(){
 }
 
 void PaqueteDatagrama::inicializaPuerto(int p){
-	puerto= p;
+	puerto = p;
 }
 
 void PaqueteDatagrama::inicializaIp(char* ip_envio){
@@ -49,6 +47,3 @@ void PaqueteDatagrama::inicializaIp(char* ip_envio){
 void PaqueteDatagrama::inicializaDatos(char* data){
 	memcpy(datos, data,longitud);
 }
-
-
-
