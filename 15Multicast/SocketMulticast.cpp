@@ -15,12 +15,6 @@ using namespace std;
 
 SocketMulticast::SocketMulticast(int puerto) {
 	s = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-   	int reuse = 1;
-   	if(setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &reuse, sizeof(reuse)) == -1) {
-   		printf("Erro al llamar a la función setsockopt\n");
-   		exit(0);
-   	}
-
 	/* rellena la dirección local */
    	bzero((char *)&direccionLocal, sizeof(direccionLocal));
    	direccionLocal.sin_family = PF_INET;
@@ -29,7 +23,6 @@ SocketMulticast::SocketMulticast(int puerto) {
 	bind(s, (struct sockaddr *)&direccionLocal, sizeof(direccionLocal));
 	/* rellena la dirección foranea */
    	bzero((char *)&direccionForanea, sizeof(direccionForanea));
-
 }
 
 SocketMulticast::~SocketMulticast() {
@@ -57,7 +50,7 @@ int SocketMulticast::envia(PaqueteDatagrama &p, unsigned char TTL) {
 
 	int val = setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, (void *) &TTL, sizeof(TTL));
 	
-	return sendto(s, (char *)p.obtieneDatos(), p.obtieneLongitud(), 0, (struct sockaddr *) &direccionForanea, sizeof(direccionForanea));
+	return sendto(s, (char *)p.obtieneDatos(),p.obtieneLongitud(), 0, (struct sockaddr *) &direccionForanea, sizeof(direccionForanea));
 }
 
 void SocketMulticast::unirseGrupo(char *multicastIP) {
