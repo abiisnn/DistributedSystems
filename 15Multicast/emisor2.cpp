@@ -21,11 +21,12 @@ int main() {
 		char result[sizeof(int)];
 		int num[1];
 		PaqueteDatagrama d(sizeof(int));
-		SocketDatagrama c(puerto);
+		SocketDatagrama c(8080);
 
 		int n = c.recibe(d);
 		cout <<"Tamaño de recibido: "<< n << endl;
 		memcpy(num, d.obtieneDatos(), sizeof(int));
 		printf("La suma es:: %d \n",num[0]);
 	}
+	return 0;
 }
