@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
 	char buffer[BUFSIZ];
 	int nbytes, origen;
 
-	if(argc!=2){
+	if(argc != 2){
 		printf("Forma de uso: ./cliente nombre_del_archivo.txt\n");
 		exit(-1);
 	}
@@ -26,16 +26,15 @@ int main(int argc, char* argv[]){
 		exit(-1);
 	}
 
-	nbytes= read(origen, buffer, sizeof buffer);
+	nbytes = read(origen, buffer, sizeof buffer);
 	close(origen);
 
 	cout << buffer << endl;
 
-
-	PaqueteDatagrama a(buffer, 31, "127.0.0.1", 7200);
 	SocketDatagrama c(7200);
-	int n=c.envia(a);
-	cout<<"Tamaño de envio: "<<n << endl;
+	PaqueteDatagrama a(buffer, 31, "10.100.71.110", 7200);
+	int n = c.envia(a);
+	cout << "Tamaño de envio: "<< n << endl;
 	
 	return 0;
 }
