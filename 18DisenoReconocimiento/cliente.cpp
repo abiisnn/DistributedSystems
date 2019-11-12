@@ -8,12 +8,14 @@
 #include <iterator> 
 #include "SocketDatagram.h"
 #include "PaqueteDatagrama.h"
+#include "Solicitud.h"
+#include "mensaje.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]){
 
-	char buffer[BUFSIZ];
+	char buffer[32];
 	int nbytes, origen;
 
 	if(argc != 2){
@@ -26,10 +28,27 @@ int main(int argc, char* argv[]){
 		exit(-1);
 	}
 
-	nbytes = read(origen, buffer, sizeof buffer);
+	int cont =1;
+	int i=0;
+
+	while((nbytes = read(origen, buffer, sizeof buffer)) > 0 ){
+		cout << "Linea " << cont << ". " << buffer;
+
+		// Enviar cadena al servidor
+		Solicitud a;
+		int r;
+		struct mensaje * m =(struct mensaje *)a.doOperation("10.100.74.163", 7200, i, buffer);
+		memcpy(&r,m->arguments,sizeof(int));
+
+
+
+		cont++;
+
+	}
+
 	close(origen);
 
-	cout << buffer << endl;
+	
 
 	SocketDatagrama c(7200);
 	PaqueteDatagrama a(buffer, 31, "10.100.71.110", 7200);
