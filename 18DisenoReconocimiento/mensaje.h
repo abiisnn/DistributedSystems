@@ -6,4 +6,3 @@ struct mensaje{
     int operationId;          //Identificador de la operación
     char arguments[TAM_MAX_DATA]; 
 };
-#ifndef Mensaje_H_
