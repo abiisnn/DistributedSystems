@@ -1,5 +1,6 @@
 #include "SocketDatagram.h"
 #include "PaqueteDatagrama.h"
+#include "respuesta.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -15,17 +16,21 @@ int main(int argc, char* argv[]){
 		perror(argv[1]);
 		exit(-1);
 	}
-
-	PaqueteDatagrama a(31);
-	a.inicializaPuerto(8080);
-	SocketDatagrama c(7200);
-	int n=c.recibe(a);
-	cout<<"Tamaño de recibido: "<<n << endl;
-	cout<<"Datos Recibidos: "<<a.obtieneDatos()<<endl;
-
-	write(dest, a.obtieneDatos(), 31);
-	write(dest, "\n", 1);
-	close(dest);
+	int i = 0;
+	while(true) {
+		struct mensaje *m;
+		Respuesta r(7200);
+		m = r.getRequest();
+		cout << "Recibí cadena " << i << endl;
+		if(m != NULL) {
+			char datos[31];
+			memcpy(datos, m->arguments, sizeof(char) * 32);
+			write(dest, datos, 31);
+			write(dest, "\n", 1);
+			close(dest);
+		}
+		i++;
+	}
 
 	return 0;
 }
