@@ -10,7 +10,7 @@
 class SocketDatagrama
 {
 	public:
-	SocketDatagrama(int);
+	SocketDatagrama(int puerto);
 	~SocketDatagrama();
 	//Recibe un paquete tipo datagrama proveniente de este socket
 	int recibe(PaqueteDatagrama & p);
