@@ -18,8 +18,8 @@ int main(int argc, char* argv[]){
 	char buffer[32];
 	int nbytes, origen;
 
-	if(argc != 2){
-		printf("Forma de uso: ./cliente nombre_del_archivo.txt\n");
+	if(argc != 3){
+		printf("Forma de uso: ./cliente nombre_del_archivo.txt num_registros\n");
 		exit(-1);
 	}
 
@@ -28,24 +28,38 @@ int main(int argc, char* argv[]){
 		exit(-1);
 	}
 
+	int k[1];
+	k[0]= atoi(argv[2]);
+
 	int cont =1;
 	int i=0;
 
+	// Enviando al servidor el numero de registros que va a recibir
+	//cout << "Enviando al servidor " << k[0] << " registros " << endl;
+	Solicitud b;
+	int r;
+	struct mensaje * m2 =(struct mensaje *)b.doOperation("10.100.74.163", 7200, i, (char*)k);
+	i++;
+
+
 	while((nbytes = read(origen, buffer, sizeof buffer)) > 0 ){
-		cout << "Linea " << cont << ". " << buffer;
+		//cout << "Linea " << cont << ". " << buffer << endl;
 
 		// Enviar cadena al servidor
 		Solicitud a;
-		int r;
 		struct mensaje * m =(struct mensaje *)a.doOperation("10.100.74.163", 7200, i, buffer);
 		memcpy(&r,m->arguments,sizeof(int));
 
+		//cout << "Respuesta: " << r << endl;
 
 
+		i++;
 		cont++;
 
 	}
 
+
+	cout << "Ya acabe " << endl;
 	close(origen);
 
 	
@@ -53,7 +67,7 @@ int main(int argc, char* argv[]){
 	SocketDatagrama c(7200);
 	PaqueteDatagrama a(buffer, 31, "10.100.71.110", 7200);
 	int n = c.envia(a);
-	cout << "Tamaño de envio: "<< n << endl;
+	//cout << "Tamaño de envio: "<< n << endl;
 	
 	return 0;
 }
