@@ -1,6 +1,5 @@
 #include "respuesta.h"
 #include "SocketDatagram.h"
-#include "mensaje.h"
 #include "PaqueteDatagrama.h"
 #include <bits/stdc++.h>
 
