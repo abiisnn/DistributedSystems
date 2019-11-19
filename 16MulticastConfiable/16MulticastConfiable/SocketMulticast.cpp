@@ -84,34 +84,42 @@ int SocketMulticast::enviaConfiable(PaqueteDatagrama & p, unsigned char TTL, int
 
 	int val = setsockopt(s, IPPROTO_IP, IP_MULTICAST_TTL, (void *) &TTL, sizeof(TTL));
 	struct mensaje m;
-	m.messageType=0;
-	m.requestId=0;
-	memcpy(&m.arguments,p.obtieneDatos(),p.obtieneLongitud());
-	int env = sendto(s, (char *)&m,sizeof(struct mensaje), 0, (struct sockaddr *) &direccionForanea, sizeof(direccionForanea));
-	int rec=0;
-	SocketDatagrama c(8080);
-	for (int i = 0; i < num_receptores; i++)
-	{
-		
-		char result[sizeof(int)];
-		int num[1];
-		PaqueteDatagrama d(sizeof(int));
-		if(c.recibe(d)>0)
+	int rec=0,cont =0;
+	memcpy(&(m),p.obtieneDatos(),p.obtieneLongitud());
+	int aba;
+	memcpy(&aba,&(m.arguments),sizeof(int));
+	printf("Numero enviado: %d\n",aba);
+	int env;
+	do{
+		env = sendto(s, (char *)&m,sizeof(struct mensaje), 0, (struct sockaddr *) &direccionForanea, sizeof(direccionForanea));
+		SocketDatagrama c(8080);
+		for (int i = 0; i < num_receptores; i++)
 		{
-			printf("recibi\n");
-			struct mensaje maux;
-			memcpy(&maux, d.obtieneDatos(), sizeof(struct mensaje));
-			if(maux.requestId==m.requestId)
+			
+			char result[sizeof(int)];
+			int num[1];
+			PaqueteDatagrama d(sizeof(struct mensaje));
+			if(c.recibeTimeout(d,1,0000)>0)
 			{
-				printf("Regreso: %d \n",maux.requestId);
-				rec++;
-			}
-		}		
-	}
-	c.~SocketDatagrama();
-	
-	if(num_receptores>rec)
+				//printf("recibi\n");
+				struct mensaje maux;
+				memcpy(&maux, d.obtieneDatos(), sizeof(struct mensaje));
+				if(maux.requestId==m.requestId)
+				{
+					int aba;
+					memcpy(&aba,&(maux.arguments),sizeof(int));
+					printf("Regreso: %d \n",aba);
+					rec++;
+				}
+			}		
+		}
+		c.~SocketDatagrama();
+		cont++;
+	}while(num_receptores>rec && cont < 7);
+	if(cont == 7){
+		printf("Error\n");
 		return -1;
+	}
 	return env;
 	
 }
