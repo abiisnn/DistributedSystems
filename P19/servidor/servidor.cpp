@@ -27,20 +27,20 @@ int main(int argc, char* argv[]){
 	N = r.getRequest();
 	if(N != NULL) {
 		memcpy(num, N->arguments, sizeof(int) * 1);
-		cout << "Número de paquetes: " << (int)num[0] << endl;
+	//		cout << "Número de paquetes: " << (int)num[0] << endl;
 		acuse = 1;
 		r.sendReply((char *)&acuse);
 		//num[0]++;
-		set<string> celulares;
+		set<string> celulares
 		//num[0]=1000;
 		while(num[0]--) {
 			timeval hora;
 			gettimeofday(&hora,NULL);
 			m = r.getRequest();
-			printf("segundos: %ld\n",hora.tv_sec);
-			printf("microsegundos: %ld\n",hora.tv_usec);
+			//printf("segundos: %ld\n",hora.tv_sec);
+			//printf("microsegundos: %ld\n",hora.tv_usec);
 			int reply = 0;
-			cout << "Recibí cadena " << i << endl;
+			//cout << "Recibí cadena " << i << endl;
 			if(m != NULL) {
 				char datos[31];
 				memcpy(datos, m->arguments, sizeof(char) * 31);
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
 					aux+=datos[i];
 					
 				}
-				cout<<aux<<endl;
+				//cout<<aux<<endl;
 
 				if(celulares.find(aux) != celulares.end()){
 					//poner hora en cero

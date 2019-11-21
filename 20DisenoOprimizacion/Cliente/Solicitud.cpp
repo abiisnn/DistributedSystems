@@ -9,7 +9,7 @@ using namespace std;
 #define TAM_MAX_DATA 4000
 Solicitud::Solicitud()
 {
-    socketlocal= new SocketDatagrama(0);  
+    socketlocal= new SocketDatagrama(7200);  
 }
 char * Solicitud::doOperation(char *IP, int puerto, int operationId, char *arguments)
 {
@@ -46,5 +46,7 @@ char * Solicitud::doOperation(char *IP, int puerto, int operationId, char *argum
     struct mensaje* aux3;
     aux3 = &m2;
     //printf("%d\n",aux2);
+    socketlocal->~SocketDatagrama();
     return(char *) aux3;
+
 }

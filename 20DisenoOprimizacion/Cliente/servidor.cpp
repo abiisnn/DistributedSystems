@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
 		while(num[0]--) {
 			m = r.getRequest();
 			int reply = 0;
-			cout << "Recibí cadena " << i << endl;
+			//cout << "Recibí cadena " << i << endl;
 			if(m != NULL) {
 				char datos[31];
 				memcpy(datos, m->arguments, sizeof(char) * 31);

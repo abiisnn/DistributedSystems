@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
 	//cout << "Enviando al servidor " << k[0] << " registros " << endl;
 	Solicitud b;
 	int r;
-	struct mensaje * m2 =(struct mensaje *)b.doOperation("10.100.69.232", 7200, i, (char*)k);
+	struct mensaje * m2 =(struct mensaje *)b.doOperation("10.100.65.158", 7200, i, (char*)k);
 	i++;
 
 	timeval hora;
@@ -48,10 +48,10 @@ int main(int argc, char* argv[]){
 
 		// Enviar cadena al servidor
 		Solicitud a;
-		struct mensaje * m =(struct mensaje *)a.doOperation("10.100.69.232", 7200, i, buffer);
+		struct mensaje * m =(struct mensaje *)a.doOperation("10.100.65.158", 7200, i, buffer);
 		memcpy(&hora,m->arguments,sizeof(timeval));
-		printf("Segundos: %ld \n",hora.tv_sec);
-		printf("Microegundos: %ld \n",hora.tv_usec);
+		//printf("Segundos: %ld \n",hora.tv_sec);
+		//printf("Microegundos: %ld \n",hora.tv_usec);
 		//cout << "Respuesta: " << r << endl;
 
 

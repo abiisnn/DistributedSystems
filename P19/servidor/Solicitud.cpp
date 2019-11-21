@@ -45,6 +45,8 @@ char * Solicitud::doOperation(char *IP, int puerto, int operationId, char *argum
     memcpy(&m2,c.obtieneDatos(),sizeof(struct mensaje));
     struct mensaje* aux3;
     aux3 = &m2;
+	
+    socketlocal->~SocketDatagrama();
     //printf("%d\n",aux2);
     return(char *) aux3;
 }
